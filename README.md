@@ -94,19 +94,19 @@ Then open `http://localhost:5000` in your browser.
 ## 📸 Screenshots
 
 ### Calculator
-![Calculator](screenshots/calculator.png)
+![Calculator](screenshots/Calculator.png)
 
 ### Contact Book
-![Contact Book](screenshots/contact.png)
+![Contact Book](screenshots/Contact_Book.png)
 
 ### Password Generator
-![Password Generator](screenshots/password.png)
+![Password Generator](screenshots/Password_Generator.png)
 
 ### Rock Paper Scissors
-![Rock Paper Scissors](screenshots/rps.png)
+![Rock Paper Scissors](screenshots/Rock_paper_Scissor.png)
 
 ### To-Do List
-![To-Do List](screenshots/todo.png)
+![To-Do List](screenshots/To_Do_List.png)
 
 ---
 
