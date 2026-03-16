@@ -60,21 +60,27 @@ const Calculator = {
 
     evaluate: function() {
         if (!this.expression) return;
-        fetch('/api/calculator/evaluate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ expression: this.expression })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.error) {
-                this.showError(data.error);
-            } else {
-                this.expression = String(data.result);
-                this.updateDisplay(this.expression);
+        try {
+            // Check for division by zero
+            if (/\/\s*0(?![.\d])/.test(this.expression)) {
+                this.showError('Cannot divide by zero');
+                return;
             }
-        })
-        .catch(() => this.showError('Connection error. Please try again.'));
+            // Only allow safe characters
+            if (!/^[\d+\-*/.() %]+$/.test(this.expression)) {
+                this.showError('Invalid expression');
+                return;
+            }
+            const result = Function('"use strict"; return (' + this.expression + ')')();
+            if (!isFinite(result)) {
+                this.showError('Cannot divide by zero');
+                return;
+            }
+            this.expression = String(parseFloat(result.toFixed(10)));
+            this.updateDisplay(this.expression);
+        } catch (e) {
+            this.showError('Invalid expression');
+        }
     },
 
     updateDisplay: function(val) {

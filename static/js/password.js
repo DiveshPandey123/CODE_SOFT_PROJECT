@@ -29,7 +29,14 @@ const PasswordGenerator = {
     init: function() {},
 
     generate: function() {
-        const length = document.getElementById('passLength').value;
+        const lengthVal = document.getElementById('passLength').value;
+        const length = parseInt(lengthVal);
+
+        if (!length || length <= 0) {
+            this.showError('Enter a valid positive number');
+            return;
+        }
+
         const uppercase = document.getElementById('passUpper').checked;
         const lowercase = document.getElementById('passLower').checked;
         const numbers = document.getElementById('passNumbers').checked;
@@ -40,43 +47,34 @@ const PasswordGenerator = {
             return;
         }
 
-        fetch('/api/password/generate', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ length, uppercase, lowercase, numbers, symbols })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.error) {
-                this.showError(data.error);
-            } else {
-                document.getElementById('passDisplay').textContent = data.password;
-                const strengthEl = document.getElementById('passStrength');
-                const colors = { Weak: 'var(--error)', Medium: 'var(--warning)', Strong: 'var(--success)' };
-                strengthEl.textContent = `Strength: ${data.strength}`;
-                strengthEl.style.color = colors[data.strength] || 'white';
-                document.getElementById('copyBtn').style.display = 'inline-block';
-                this.hideError();
-            }
-        })
-        .catch(() => this.showError('Connection error. Please try again.'));
+        let chars = '';
+        if (uppercase) chars += 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        if (lowercase) chars += 'abcdefghijklmnopqrstuvwxyz';
+        if (numbers)   chars += '0123456789';
+        if (symbols)   chars += '!@#$%^&*()_+-=[]{}|;:,.<>?';
+
+        let password = '';
+        for (let i = 0; i < length; i++) {
+            password += chars[Math.floor(Math.random() * chars.length)];
+        }
+
+        const strength = length < 6 ? 'Weak' : length <= 10 ? 'Medium' : 'Strong';
+        const colors = { Weak: 'var(--error)', Medium: 'var(--warning)', Strong: 'var(--success)' };
+
+        document.getElementById('passDisplay').textContent = password;
+        const strengthEl = document.getElementById('passStrength');
+        strengthEl.textContent = `Strength: ${strength}`;
+        strengthEl.style.color = colors[strength];
+        document.getElementById('copyBtn').style.display = 'inline-block';
+        this.hideError();
     },
 
     copy: function() {
         const pass = document.getElementById('passDisplay').textContent;
         if (pass === '—') return;
-        navigator.clipboard.writeText(pass).then(() => {
-            this.showSuccess('Password copied to clipboard!');
-        }).catch(() => {
-            // Fallback
-            const el = document.getElementById('passDisplay');
-            const range = document.createRange();
-            range.selectNode(el);
-            window.getSelection().removeAllRanges();
-            window.getSelection().addRange(range);
-            document.execCommand('copy');
-            this.showSuccess('Password copied!');
-        });
+        navigator.clipboard.writeText(pass)
+            .then(() => this.showSuccess('Password copied to clipboard!'))
+            .catch(() => this.showSuccess('Password copied!'));
     },
 
     showError: function(msg) {

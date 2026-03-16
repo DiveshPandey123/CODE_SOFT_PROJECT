@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multi-App Suite</title>
+    <link rel="stylesheet" href="static/css/style.css">
+</head>
+<body>
+    <div id="root">
+        <header class="header">
+            <h1>Multi-App Suite</h1>
+        </header>
+
+        <nav class="navbar">
+            <button class="menu-toggle" id="menuToggle">☰</button>
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="#" data-app="calculator" class="nav-link active">Calculator</a></li>
+                <li><a href="#" data-app="contacts" class="nav-link">Contacts</a></li>
+                <li><a href="#" data-app="password" class="nav-link">Password Gen</a></li>
+                <li><a href="#" data-app="rps" class="nav-link">Rock-Paper-Scissors</a></li>
+                <li><a href="#" data-app="todos" class="nav-link">To-Do List</a></li>
+            </ul>
+        </nav>
+
+        <main class="app-container" id="appContainer"></main>
+    </div>
+
+    <script src="static/js/storage.js"></script>
+    <script src="static/js/calculator.js"></script>
+    <script src="static/js/contacts.js"></script>
+    <script src="static/js/password.js"></script>
+    <script src="static/js/rps.js"></script>
+    <script src="static/js/todos.js"></script>
+    <script src="static/js/app.js"></script>
+</body>
+</html>

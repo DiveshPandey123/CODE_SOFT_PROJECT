@@ -39,53 +39,39 @@ const RPS = {
     },
 
     play: function(choice) {
-        fetch('/api/rps/play', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ choice })
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.error) return;
-            this.userScore = data.user_score;
-            this.computerScore = data.computer_score;
-            this.updateScores();
-            this.showResult(data);
-            Storage.save('app_rps_scores', { userScore: this.userScore, computerScore: this.computerScore });
-        })
-        .catch(() => {
-            // Fallback: client-side logic
-            const choices = ['rock', 'paper', 'scissors'];
-            const comp = choices[Math.floor(Math.random() * 3)];
-            let result;
-            if (choice === comp) result = 'tie';
-            else if ((choice === 'rock' && comp === 'scissors') ||
-                     (choice === 'paper' && comp === 'rock') ||
-                     (choice === 'scissors' && comp === 'paper')) result = 'win';
-            else result = 'lose';
-            if (result === 'win') this.userScore++;
-            else if (result === 'lose') this.computerScore++;
-            this.updateScores();
-            this.showResult({ user_choice: choice, computer_choice: comp, result });
-            Storage.save('app_rps_scores', { userScore: this.userScore, computerScore: this.computerScore });
-        });
+        const choices = ['rock', 'paper', 'scissors'];
+        const comp = choices[Math.floor(Math.random() * 3)];
+
+        let result;
+        if (choice === comp) result = 'tie';
+        else if (
+            (choice === 'rock'     && comp === 'scissors') ||
+            (choice === 'paper'    && comp === 'rock')     ||
+            (choice === 'scissors' && comp === 'paper')
+        ) result = 'win';
+        else result = 'lose';
+
+        if (result === 'win') this.userScore++;
+        else if (result === 'lose') this.computerScore++;
+
+        this.updateScores();
+        this.showResult(choice, comp, result);
+        Storage.save('app_rps_scores', { userScore: this.userScore, computerScore: this.computerScore });
     },
 
-    showResult: function(data) {
+    showResult: function(userChoice, compChoice, result) {
         const el = document.getElementById('rpsResult');
         if (!el) return;
         const colors = { win: 'var(--success)', lose: 'var(--error)', tie: 'var(--warning)' };
         const labels = { win: 'You Win! 🎉', lose: 'You Lose! 😞', tie: "It's a Tie! 🤝" };
         el.innerHTML = `
-            <div>${this.emojis[data.user_choice]} You &nbsp;&nbsp; vs &nbsp;&nbsp; Computer ${this.emojis[data.computer_choice]}</div>
-            <div style="color:${colors[data.result]};font-weight:bold;margin-top:0.5rem;">${labels[data.result]}</div>
+            <div>${this.emojis[userChoice]} You &nbsp;&nbsp; vs &nbsp;&nbsp; Computer ${this.emojis[compChoice]}</div>
+            <div style="color:${colors[result]};font-weight:bold;margin-top:0.5rem;">${labels[result]}</div>
         `;
     },
 
     reset: function() {
         if (!confirm('Reset game scores?')) return;
-        fetch('/api/rps/reset', { method: 'POST' })
-            .catch(() => {});
         this.userScore = 0;
         this.computerScore = 0;
         this.updateScores();
